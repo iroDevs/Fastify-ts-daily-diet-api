@@ -1,14 +1,14 @@
 // import env from './env/env';
 import fastify from './app';
-
+import env from './env/env';
 
 
   const start = async () => {
     try {
-        const PORT = 3000;
 
-       await fastify.listen({ port: Number(PORT)})
-        console.log(`Server listening on ${PORT}`);
+
+       await fastify.listen({ port: env.NODE_PORT})
+        console.log(`Server listening on ${env.NODE_PORT}`);
 
     } catch (err) {
       fastify.log.error(err);
