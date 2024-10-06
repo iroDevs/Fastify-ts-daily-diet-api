@@ -1,6 +1,7 @@
-import { FastifyInstance } from "fastify";
+import { randomUUID } from "crypto";
+import { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from 'zod'
-
+import { kenex as knex } from '../database/database';
 
 export default async function receitaRoutes(fastify: FastifyInstance) {
 
