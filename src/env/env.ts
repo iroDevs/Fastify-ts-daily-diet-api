@@ -1,7 +1,12 @@
 import { z } from 'zod'
 import  dotenv  from 'dotenv'
 
-dotenv.config()
+
+if (process.env.NODE_ENV === 'test') {
+    dotenv.config({ path: '.env.test' })
+}else {
+    dotenv.config()
+}
 
 export const envSchema = z.object({
     NODE_PORT: z.coerce.number(),
