@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "test": "vitest run src/test",
+    "test": "vitest run src/test --no-file-parallelism ",
     "build": "tsc",
     "dev": "tsx watch src/server.ts"
   },

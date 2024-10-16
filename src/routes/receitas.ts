@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { FastifyInstance, FastifyRequest } from "fastify";
-import { z } from 'zod'
+import { string, z } from 'zod'
 import { kenex as knex } from '../database/database';
 
 export default async function receitaRoutes(fastify: FastifyInstance) {
@@ -79,10 +79,11 @@ export default async function receitaRoutes(fastify: FastifyInstance) {
             const receitasSchema = z.object({
                 nome: z.string(),
                 descricao: z.string(),
-                dataHora: z.string(),
-                estaNaDienta: z.boolean(),
-                usuarioId: z.number()
-            })
+                data_hora: z.string(),
+                dieta: z.boolean(),
+                usuario_id: z.number(),
+                cookie_usuario: z.string().optional()
+        })
 
             const receita = receitasSchema.parse(request.body)
             let cookie = request.cookies.sessionId
@@ -93,18 +94,18 @@ export default async function receitaRoutes(fastify: FastifyInstance) {
                     path: '/',
                     maxAge: 60 * 60 * 24 * 7 // 1 Semana
                 })
+                receita.cookie_usuario = cookie
+            }else {
+                receita.cookie_usuario = cookie
             }
 
-            await knex('receita').insert({
-                nome: receita.nome,
-                descricao: receita.descricao,
-                data_hora: receita.dataHora,
-                dieta: receita.estaNaDienta,
-                cookie_usuario: cookie,
-                usuario_id: receita.usuarioId
-            })
+
+
+            await knex('receita').insert(receita)
             return reply.status(201).send({ sucesso: 'Receita criada com sucesso' })
         }catch (erro){
+            console.log(erro);
+
             return reply.status(400).send({ error: "Dados inválidos" })
         }
 
@@ -115,16 +116,19 @@ export default async function receitaRoutes(fastify: FastifyInstance) {
             const receitasSchema = z.object({
                 nome: z.string(),
                 descricao: z.string(),
-                dataHora: z.string(),
-                estaNaDienta: z.boolean(),
-                usuarioId: z.number()
+                data_hora: z.string(),
+                dieta: z.boolean(),
+                usuario_id: z.number()
             })
 
             const id: string = request.params.id
             const receita = receitasSchema.parse(request.body)
-            await knex('receita').where('id', id).update(receita)
 
+            await knex('receita').where('id', id).update(receita)
+            return reply.status(200).send({ sucesso: 'Receita atualizada com sucesso' })
         } catch (error) {
+            console.log(error);
+
             return reply.status(400).send({ error: "Erro ao atualizar receita" })
         }
 

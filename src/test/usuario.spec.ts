@@ -8,16 +8,20 @@ import { execSync } from 'child_process'
 describe('Testando rotas de usuario', () => {
     beforeAll(async () => {
         await app.ready()
-        execSync('npx knex migrate:rollback --all')
     })
 
     afterAll(async () => {
         await app.close()
     })
 
-    beforeEach(async () => {
-        execSync('npx knex migrate:rollback --all')
-        execSync('npx knex migrate:latest')
+    beforeEach(() => {
+        try {
+            execSync('npx knex migrate:rollback --all');
+            execSync('npx knex migrate:latest');
+        } catch (error) {
+            console.error('Error during migration rollback:', error);
+            throw error; // Para garantir que o erro seja exibido
+        }
     })
 
     it('Deve criar um usuario', async () => {

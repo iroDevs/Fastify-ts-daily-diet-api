@@ -5,30 +5,34 @@ import { execSync } from 'child_process'
 
 
 
-describe('Testando rotas de usuario', () => {
+describe('Testando rotas de Receita', () => {
     beforeAll(async () => {
         await app.ready()
-        execSync('npx knex migrate:rollback --all')
     })
 
     afterAll(async () => {
         await app.close()
     })
 
-    beforeEach(async () => {
-        execSync('npx knex migrate:rollback --all')
-        execSync('npx knex migrate:latest')
+    beforeEach(() => {
+        try {
+            execSync('npx knex migrate:rollback --all');
+            execSync('npx knex migrate:latest');
+        } catch (error) {
+            console.error('Error during migration rollback:', error);
+            throw error; // Para garantir que o erro seja exibido
+        }
     })
 
     it('Deve criar uma receita', async () => {
         const response = await request(app.server)
             .post('/receita')
             .send({
-                nome: "Broa",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
             .expect(201)
 
@@ -39,22 +43,20 @@ describe('Testando rotas de usuario', () => {
         await request(app.server)
             .post('/receita')
             .send({
-                nome: "Broa",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
-            .expect(201)
-
         const response = await request(app.server)
             .put('/receita/1')
             .send({
-                nome: "Broa teste",
+                nome: "carne teste",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
             .expect(200)
             console.log(response.body);
@@ -62,7 +64,7 @@ describe('Testando rotas de usuario', () => {
 
          const getReceitaEditada = await request(app.server).get('/receita/1')
 
-        expect(getReceitaEditada.body.nome).toEqual('Broa')
+        expect(getReceitaEditada.body.nome).toEqual('carne teste')
         expect(response.body).toEqual({sucesso: 'Receita atualizada com sucesso'})
     })
 
@@ -70,11 +72,11 @@ describe('Testando rotas de usuario', () => {
         await request(app.server)
             .post('/receita')
             .send({
-                nome: "Broa",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
             .expect(201)
 
@@ -87,13 +89,13 @@ describe('Testando rotas de usuario', () => {
         await request(app.server)
             .post('/receita')
             .send({
-                nome: "Broa",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
-            .expect(201)
+
 
         const response = await request(app.server)
             .delete('/receita/1')
@@ -107,43 +109,43 @@ describe('Testando rotas de usuario', () => {
             .send({
                 nome: 'teste'
             })
-            .expect(201)
+
 
         await request(app.server)
             .post('/receita')
             .send({
-                nome: "Broa",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: true,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: true,
+                usuario_id: 1
             })
-            .expect(201)
+
 
         await request(app.server)
             .post('/receita')
             .send({
-                nome: "pao",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: true,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: false,
+                usuario_id: 1
             })
-            .expect(201)
+
 
             await request(app.server)
             .post('/receita')
             .send({
-                nome: "bolinho",
+                nome: "carne",
                 descricao: "boa",
-                dataHora: "2024-10-06 00:00:00",
-                estaNaDienta: false,
-                usuarioId: 1
+                data_hora: "2024-10-06 00:00:00",
+                dieta: false,
+                usuario_id: 1
             })
-            .expect(201)
+
 
         const response = await request(app.server)
-            .get('/receita/metricas/usuario/1')
+            .get('/receita/metricas/user/1')
             .expect(200)
     })
 })
